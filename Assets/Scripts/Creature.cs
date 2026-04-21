@@ -105,9 +105,16 @@ public class Creature : MonoBehaviour
         direction = direction.normalized;
 
         cc.Move(direction*speed*Time.deltaTime);
-        //rb.MovePosition(transform.position + direction*speed*Time.deltaTime);
-        //transform.position += direction * speed * Time.deltaTime;
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), rotateSpeed * Time.deltaTime);
+
+        Vector3 flatDirection = new Vector3(direction.x, 0f, direction.z);
+        if (flatDirection != Vector3.zero)
+        {
+            transform.rotation = Quaternion.Lerp(
+                transform.rotation,
+                Quaternion.LookRotation(flatDirection),
+                rotateSpeed * Time.deltaTime
+            );
+        }
     }
 
     public void AimCreature(Vector3 pos)

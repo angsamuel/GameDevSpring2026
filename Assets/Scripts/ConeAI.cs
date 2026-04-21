@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.AI;
 public class ConeAI : MonoBehaviour
 {
     public Creature myCreature;
@@ -18,7 +18,8 @@ public class ConeAI : MonoBehaviour
 
     void Start()
     {
-        ChangeState(PatrolStateRoutine());
+        //ChangeState(PatrolStateRoutine());
+        StartCoroutine(PursuitStateRoutine());
     }
 
     void Update()
@@ -79,6 +80,33 @@ public class ConeAI : MonoBehaviour
         }
         currentState = newState;
         StartCoroutine(currentState);
+    }
+
+    IEnumerator PursuitStateRoutine()
+    {
+
+
+        yield return new WaitForSeconds(1f);
+
+        NavMeshPath path = new NavMeshPath();
+        int nextElement = 1;
+        bool pathFound = GetComponent<NavMeshAgent>().CalculatePath(transform.position + new Vector3(0,0,28), path);
+
+
+        while (nextElement < path.corners.Length)
+        {
+            Vector3 nextPos = new Vector3(path.corners[nextElement].x, transform.position.y, path.corners[nextElement].z);
+            myCreature.MoveTowards(nextPos);
+            if (Vector3.Distance(transform.position, nextPos) <= 2)
+            {
+                nextElement++;
+            }
+            yield return null;
+
+        }
+
+        yield return null;
+
     }
 
     IEnumerator AttackStateRoutine()
@@ -214,7 +242,7 @@ public class ConeAI : MonoBehaviour
         {
             return false;
         }
-        Debug.Log("CAN SEE CREATURE");
+
         return true;
     }
 }
